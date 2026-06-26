@@ -71,6 +71,7 @@ export function LessonPlayerPage() {
         .eq('course_id', courseData.id)
         .order('position', { ascending: true });
 
+      let assembled: CurriculumData[] = [];
       if (modulesData) {
         const { data: lessonsData } = await supabase
           .from('lessons')
@@ -78,18 +79,18 @@ export function LessonPlayerPage() {
           .in('module_id', modulesData.map(m => m.id))
           .order('position', { ascending: true });
 
-        const assembled = modulesData.map(m => ({
+        assembled = modulesData.map(m => ({
           ...m,
           lessons: (lessonsData || []).filter(l => l.module_id === m.id),
         }));
         setCurriculum(assembled);
 
-        if (lesson_id) {
+        if (lesson_id && lesson_id !== 'resume') {
           const found = lessonsData?.find(l => l.id === lesson_id);
           if (found) setCurrentLesson(found);
         } else if (lessonsData && lessonsData.length > 0) {
-          // default to first
-          navigate(`/learn/courses/${slug}/lessons/${lessonsData[0].id}`, { replace: true });
+          // If 'resume' or no lesson_id, we need to find the first uncompleted lesson
+          // We will do this after we fetch progress data
         }
       }
 
@@ -101,7 +102,18 @@ export function LessonPlayerPage() {
         .eq('completed', true);
 
       if (progressData) {
-        setCompletedLessonIds(new Set(progressData.map(p => p.lesson_id)));
+        const completedIds = new Set(progressData.map(p => p.lesson_id));
+        setCompletedLessonIds(completedIds);
+        
+        // Handle 'resume' routing
+        if (lesson_id === 'resume' || !lesson_id) {
+          const allLessons = assembled.flatMap((m: any) => m.lessons);
+          const firstUncompleted = allLessons.find((l: any) => !completedIds.has(l.id));
+          const targetLesson = firstUncompleted || allLessons[0];
+          if (targetLesson) {
+            navigate(`/learn/courses/${slug}/lessons/${targetLesson.id}`, { replace: true });
+          }
+        }
       }
 
       setLoading(false);

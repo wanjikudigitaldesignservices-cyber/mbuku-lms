@@ -1,22 +1,45 @@
-// ============================================================
-// mbuku LMS — Student Dashboard (Placeholder)
-// Full implementation in Phase 3
-// ============================================================
-
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {
-  BookOpen,
-  Compass,
-  Award,
-  Bot,
-  ArrowRight,
-} from 'lucide-react';
+import { BookOpen, Compass, Award, Bot, ArrowRight, PlayCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
+import type { Database } from '@/lib/types/database';
+
+type Course = Database['public']['Tables']['courses']['Row'];
+type Enrollment = Database['public']['Tables']['enrollments']['Row'];
+
+type EnrolledCourseData = Enrollment & {
+  course: Course;
+};
 
 export function StudentDashboardPage() {
-  const { profile } = useAuthContext();
+  const { profile, user } = useAuthContext();
+  const [enrollments, setEnrollments] = useState<EnrolledCourseData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEnrollments() {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select(`
+          *,
+          course:courses(*)
+        `)
+        .eq('user_id', user.id)
+        .order('enrolled_at', { ascending: false });
+
+      if (!error && data) {
+        setEnrollments(data as unknown as EnrolledCourseData[]);
+      }
+      setLoading(false);
+    }
+    
+    fetchEnrollments();
+  }, [user]);
 
   return (
     <div>
@@ -31,44 +54,6 @@ export function StudentDashboardPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           Continue your learning journey
         </p>
-      </motion.div>
-
-      {/* Welcome banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.5 }}
-        className={cn(
-          'mt-8 relative overflow-hidden rounded-2xl',
-          'bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10',
-          'border border-primary/20 p-8'
-        )}
-      >
-        <div className="relative z-10">
-          <h2 className="text-xl font-bold text-foreground">
-            Welcome to mbuku LMS
-          </h2>
-          <p className="mt-2 max-w-lg text-sm text-muted-foreground">
-            Explore courses in Cloud Computing (AWS re/Start style), Frontend Development,
-            and Mobile Development. Start building your tech career today.
-          </p>
-          <Link
-            to="/courses"
-            className={cn(
-              'mt-4 inline-flex items-center gap-2 rounded-xl',
-              'bg-primary px-5 py-2.5 text-sm font-semibold text-white',
-              'shadow-lg shadow-primary/25 transition-all duration-200',
-              'hover:shadow-xl hover:shadow-primary/30 hover:brightness-110'
-            )}
-          >
-            Browse Courses
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        {/* Decorative blur */}
-        <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute -bottom-12 -left-12 h-36 w-36 rounded-full bg-accent/15 blur-3xl" />
       </motion.div>
 
       {/* Quick links */}
@@ -100,7 +85,7 @@ export function StudentDashboardPage() {
             key={item.href}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + i * 0.1, duration: 0.4 }}
+            transition={{ delay: 0.1 + i * 0.1, duration: 0.4 }}
           >
             <Link
               to={item.href}
@@ -124,18 +109,88 @@ export function StudentDashboardPage() {
         ))}
       </div>
 
-      {/* Enrolled courses placeholder */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 rounded-2xl border border-dashed border-white/[0.1] p-12 text-center"
-      >
-        <BookOpen className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
-        <p className="text-muted-foreground">
-          📖 Course catalog & enrollment coming in <strong>Phase 3</strong>
-        </p>
-      </motion.div>
+      <div className="mt-12 mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-foreground">My Learning</h2>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : enrollments.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-2xl border border-dashed border-white/[0.1] p-12 text-center bg-card/30"
+        >
+          <BookOpen className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
+          <h3 className="text-lg font-medium text-foreground mb-2">No courses yet</h3>
+          <p className="text-muted-foreground mb-6">
+            You haven't enrolled in any courses yet. Explore our catalog to start learning.
+          </p>
+          <Link
+            to="/courses"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-colors"
+          >
+            Browse Catalog
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </motion.div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {enrollments.map((enr, i) => (
+            <motion.div
+              key={enr.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-card/30 backdrop-blur-sm shadow-lg transition-all duration-300 hover:border-white/[0.12] hover:shadow-xl"
+            >
+              <div className="aspect-video w-full bg-black/40 relative">
+                {enr.course.thumbnail_url ? (
+                  <img src={enr.course.thumbnail_url} alt={enr.course.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
+                    <BookOpen className="h-12 w-12" />
+                  </div>
+                )}
+                <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-md backdrop-blur-md bg-black/60 text-white border border-white/10">
+                  {enr.progress_percent}% Complete
+                </div>
+              </div>
+              
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2">
+                  {enr.course.title}
+                </h3>
+                
+                {/* Progress Bar */}
+                <div className="mb-6 mt-auto">
+                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-emerald-500 transition-all duration-1000 ease-out"
+                      style={{ width: `${enr.progress_percent}%` }}
+                    />
+                  </div>
+                </div>
+
+                <Link
+                  to={`/learn/courses/${enr.course.slug}/lessons/resume`}
+                  className={cn(
+                    "flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    enr.progress_percent === 100 
+                      ? "bg-white/5 hover:bg-white/10 text-foreground"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
+                  )}
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  {enr.progress_percent === 0 ? 'Start Course' : enr.progress_percent === 100 ? 'Review Course' : 'Resume Learning'}
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

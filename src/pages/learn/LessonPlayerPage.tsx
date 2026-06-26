@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Circle, PlayCircle, FileText, Loader2, Menu, X, Check } from 'lucide-react';
+import { AiTutorChat } from '@/components/learn/AiTutorChat';
 import { supabase } from '@/lib/supabase';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -317,6 +318,16 @@ export function LessonPlayerPage() {
         <div 
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      {/* AI Tutor Chat */}
+      {course && currentLesson && (
+        <AiTutorChat 
+          courseId={course.id}
+          courseTitle={course.title}
+          lessonId={currentLesson.id}
+          lessonTitle={currentLesson.title}
+          lessonContent={currentLesson.content || currentLesson.video_url || ''}
         />
       )}
     </div>

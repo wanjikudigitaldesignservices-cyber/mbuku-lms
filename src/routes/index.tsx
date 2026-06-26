@@ -2,7 +2,7 @@
 // mbuku LMS — Route Definitions
 // ============================================================
 
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter, Navigate, Outlet } from 'react-router';
 
 // Guards
 import { AuthGuard } from '@/components/guards/AuthGuard';
@@ -25,6 +25,11 @@ import { InstructorCourseCreatePage } from '@/pages/instructor/CourseCreatePage'
 import { InstructorCourseEditPage } from '@/pages/instructor/CourseEditPage';
 import { StudentDashboardPage } from '@/pages/learn/DashboardPage';
 
+// Learn/Public pages
+import { CourseCatalogPage } from '@/pages/learn/CourseCatalogPage';
+import { CourseDetailPage } from '@/pages/learn/CourseDetailPage';
+import { LessonPlayerPage } from '@/pages/learn/LessonPlayerPage';
+
 export const router = createBrowserRouter([
   // ----- Public routes -----
   {
@@ -34,6 +39,19 @@ export const router = createBrowserRouter([
   {
     path: '/signup',
     element: <SignupPage />,
+  },
+  {
+    path: '/courses',
+    element: (
+      <div>
+        {/* Simple wrapper for public catalog */}
+        <Outlet />
+      </div>
+    ),
+    children: [
+      { index: true, element: <CourseCatalogPage /> },
+      { path: ':slug', element: <CourseDetailPage /> },
+    ],
   },
 
   // ----- Admin portal -----
@@ -80,13 +98,10 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <StudentDashboardPage /> },
+      { path: 'courses/:slug/lessons/:lesson_id', element: <LessonPlayerPage /> },
       // Phase 3: My Courses, Certificates, AI Tutor
     ],
   },
-
-  // ----- Public course catalog (Phase 3) -----
-  // { path: '/courses', ... }
-  // { path: '/courses/:slug', ... }
 
   // ----- Certificate verification (Phase 6) -----
   // { path: '/verify/:code', ... }

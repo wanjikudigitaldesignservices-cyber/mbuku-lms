@@ -8,8 +8,7 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
 import { useAuthContext } from '@/contexts/AuthContext';
 import {
-  Mail, Lock, Sparkles, ArrowRight, Loader2, CheckCircle,
-  Shield, GraduationCap, BookOpenCheck
+  Mail, Lock, Sparkles, ArrowRight, Loader2, CheckCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { UserRole } from '@/lib/types/database';
@@ -24,7 +23,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
 
-  const { signIn, signInWithMagicLink, demoLogin } = useAuthContext();
+  const { signIn, signInWithMagicLink } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/learn';
@@ -59,43 +58,6 @@ export function LoginPage() {
     }
   };
 
-  const handleDemoLogin = (role: UserRole) => {
-    demoLogin(role);
-    // Navigate to the appropriate portal
-    const routes: Record<UserRole, string> = {
-      admin: '/admin',
-      instructor: '/instructor',
-      student: '/learn',
-    };
-    navigate(routes[role], { replace: true });
-  };
-
-  const demoOptions = [
-    {
-      role: 'admin' as UserRole,
-      label: 'Admin',
-      desc: 'Full platform access',
-      icon: Shield,
-      gradient: 'from-red-500 to-rose-600',
-      shadow: 'shadow-red-500/20',
-    },
-    {
-      role: 'instructor' as UserRole,
-      label: 'Instructor',
-      desc: 'Course management',
-      icon: BookOpenCheck,
-      gradient: 'from-amber-500 to-orange-600',
-      shadow: 'shadow-amber-500/20',
-    },
-    {
-      role: 'student' as UserRole,
-      label: 'Student',
-      desc: 'Learning portal',
-      icon: GraduationCap,
-      gradient: 'from-emerald-500 to-teal-600',
-      shadow: 'shadow-emerald-500/20',
-    },
-  ];
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
@@ -130,63 +92,6 @@ export function LoginPage() {
           </p>
         </div>
 
-        {/* Demo Login Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          className="mb-6 rounded-2xl border border-primary/20 bg-primary/5 backdrop-blur-sm p-5"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold text-foreground">Quick Demo Access</span>
-            <span className="ml-auto text-[10px] font-medium text-muted-foreground bg-white/[0.06] px-2 py-0.5 rounded-full">
-              DEV MODE
-            </span>
-          </div>
-          <p className="text-xs text-muted-foreground mb-4">
-            Preview all portals instantly — no Supabase setup needed
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            {demoOptions.map((opt) => (
-              <button
-                key={opt.role}
-                onClick={() => handleDemoLogin(opt.role)}
-                className={cn(
-                  'group flex flex-col items-center gap-2 rounded-xl py-3 px-2',
-                  'border border-white/[0.06] bg-white/[0.03]',
-                  'transition-all duration-300',
-                  'hover:border-white/[0.15] hover:bg-white/[0.06]',
-                  `hover:${opt.shadow}`
-                )}
-              >
-                <div className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-xl',
-                  'bg-gradient-to-br transition-transform duration-300 group-hover:scale-110',
-                  opt.gradient
-                )}>
-                  <opt.icon className="h-5 w-5 text-white" />
-                </div>
-                <div className="text-center">
-                  <p className="text-xs font-semibold text-foreground">{opt.label}</p>
-                  <p className="text-[10px] text-muted-foreground">{opt.desc}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Divider */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/[0.06]" />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-background px-3 text-xs text-muted-foreground">
-              or sign in with credentials
-            </span>
-          </div>
-        </div>
 
         {/* Card */}
         <div className="rounded-2xl border border-white/[0.08] bg-card/50 backdrop-blur-xl shadow-2xl shadow-black/20">

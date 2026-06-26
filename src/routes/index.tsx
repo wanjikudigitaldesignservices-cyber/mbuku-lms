@@ -19,6 +19,11 @@ import { SignupPage } from '@/pages/auth/SignupPage';
 
 // Dashboard pages
 import { AdminDashboardPage } from '@/pages/admin/DashboardPage';
+import { AdminUsersPage } from '@/pages/admin/UsersPage';
+import { AdminCoursesPage } from '@/pages/admin/CoursesPage';
+import { AdminCertificatesPage } from '@/pages/admin/CertificatesPage';
+import { AdminAiUsagePage } from '@/pages/admin/AiUsagePage';
+import { AdminSettingsPage } from '@/pages/admin/SettingsPage';
 import { InstructorDashboardPage } from '@/pages/instructor/DashboardPage';
 import { InstructorCourseListPage } from '@/pages/instructor/CourseListPage';
 import { InstructorCourseCreatePage } from '@/pages/instructor/CourseCreatePage';
@@ -73,7 +78,11 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <AdminDashboardPage /> },
-      // Phase 7: Users, Courses, Certificates, AI Usage, Settings
+      { path: 'users', element: <AdminUsersPage /> },
+      { path: 'courses', element: <AdminCoursesPage /> },
+      { path: 'certificates', element: <AdminCertificatesPage /> },
+      { path: 'ai-usage', element: <AdminAiUsagePage /> },
+      { path: 'settings', element: <AdminSettingsPage /> },
     ],
   },
 

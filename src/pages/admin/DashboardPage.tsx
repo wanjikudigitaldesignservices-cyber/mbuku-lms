@@ -6,11 +6,6 @@
 import { motion } from 'framer-motion';
 import {
   Users,
-  BookOpen,
-  Award,
-  TrendingUp,
-  Bot,
-  GraduationCap,
   ArrowUpRight,
   ArrowDownRight,
   Activity,
@@ -235,7 +230,7 @@ export function AdminDashboardPage() {
 
       {/* Charts Row */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Enrollments Chart */}
+        {/* Revenue Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -244,7 +239,7 @@ export function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-foreground">Monthly Enrollments</h3>
+              <h3 className="text-sm font-semibold text-foreground">Monthly Revenue (KES)</h3>
               <p className="text-xs text-muted-foreground">Last 12 months</p>
             </div>
             <div className="flex items-center gap-1.5 text-emerald-400">
@@ -252,14 +247,14 @@ export function AdminDashboardPage() {
               <span className="text-sm font-semibold">+24%</span>
             </div>
           </div>
-          <MiniBarChart data={enrollmentData} color="bg-primary/70" />
+          <MiniBarChart data={revenueData} color="bg-primary/70" />
           <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
             <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
             <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
           </div>
         </motion.div>
 
-        {/* AI Tutor Usage Chart */}
+        {/* Server Load Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -268,18 +263,18 @@ export function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Bot className="h-4 w-4 text-purple-400" />
+              <Server className="h-4 w-4 text-purple-400" />
               <div>
-                <h3 className="text-sm font-semibold text-foreground">AI Tutor Sessions</h3>
-                <p className="text-xs text-muted-foreground">Daily messages / month</p>
+                <h3 className="text-sm font-semibold text-foreground">Server Load %</h3>
+                <p className="text-xs text-muted-foreground">Daily averages</p>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 text-emerald-400">
-              <ArrowUpRight className="h-4 w-4" />
-              <span className="text-sm font-semibold">+38%</span>
+            <div className="flex items-center gap-1.5 text-red-400">
+              <ArrowDownRight className="h-4 w-4" />
+              <span className="text-sm font-semibold">-5%</span>
             </div>
           </div>
-          <MiniBarChart data={aiUsageData} color="bg-purple-500/70" />
+          <MiniBarChart data={serverLoadData} color="bg-purple-500/70" />
           <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
             <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
             <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
@@ -289,42 +284,42 @@ export function AdminDashboardPage() {
 
       {/* Bottom Row: Activity + Course Performance */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-5">
-        {/* Recent Activity */}
+        {/* System Logs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.4 }}
           className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-card/30 backdrop-blur-sm p-6"
         >
-          <h3 className="text-sm font-semibold text-foreground mb-4">Recent Activity</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-4">System Logs</h3>
           <div className="space-y-0">
-            {recentActivity.map((item, i) => (
-              <ActivityRow key={i} item={item} index={i} />
+            {systemLogs.map((item, i) => (
+              <SystemLogRow key={i} item={item} index={i} />
             ))}
           </div>
         </motion.div>
 
-        {/* Course Performance Table */}
+        {/* Top Instructors Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45, duration: 0.4 }}
           className="lg:col-span-3 rounded-2xl border border-white/[0.06] bg-card/30 backdrop-blur-sm p-6"
         >
-          <h3 className="text-sm font-semibold text-foreground mb-4">Course Performance</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-4">Top Instructors</h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="text-left py-2 text-xs font-medium text-muted-foreground">Course</th>
-                  <th className="text-center py-2 px-4 text-xs font-medium text-muted-foreground">Enrolled</th>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-muted-foreground">Completion</th>
-                  <th className="text-center py-2 pl-4 text-xs font-medium text-muted-foreground">Avg Score</th>
+                  <th className="text-left py-2 text-xs font-medium text-muted-foreground">Instructor</th>
+                  <th className="text-center py-2 px-4 text-xs font-medium text-muted-foreground">Courses</th>
+                  <th className="text-center py-2 px-4 text-xs font-medium text-muted-foreground">Revenue</th>
+                  <th className="text-center py-2 pl-4 text-xs font-medium text-muted-foreground">Rating</th>
                 </tr>
               </thead>
               <tbody>
-                {topCourses.map((course, i) => (
-                  <CourseRow key={course.title} course={course} index={i} />
+                {topInstructors.map((instructor, i) => (
+                  <InstructorRow key={instructor.name} instructor={instructor} index={i} />
                 ))}
               </tbody>
             </table>

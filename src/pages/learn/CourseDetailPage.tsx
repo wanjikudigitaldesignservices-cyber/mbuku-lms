@@ -95,7 +95,30 @@ export function CourseDetailPage() {
     if (!course) return;
 
     if (course.price_kes > 0) {
-      setError('Paid enrollment is coming soon in Phase 8.');
+      setEnrolling(true);
+      setError('');
+      try {
+        const { data, error: funcErr } = await supabase.functions.invoke('intasend-checkout', {
+          body: {
+            course_id: course.id,
+            user_id: user.id,
+          }
+        });
+
+        if (funcErr) throw funcErr;
+
+        if (data && data.url) {
+          // Redirect to IntaSend payment page
+          window.location.href = data.url;
+          return;
+        } else {
+          throw new Error('Failed to generate payment link');
+        }
+      } catch (err: any) {
+        console.error('Checkout error:', err);
+        setError(err.message || 'Failed to initiate payment.');
+        setEnrolling(false);
+      }
       return;
     }
 

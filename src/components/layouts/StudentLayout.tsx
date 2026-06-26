@@ -15,10 +15,8 @@ import {
 
 const studentNavItems: SidebarItem[] = [
   { label: 'Dashboard', href: '/learn', icon: LayoutDashboard },
-  { label: 'My Courses', href: '/learn/courses', icon: BookOpen },
   { label: 'Browse Catalog', href: '/courses', icon: Compass },
   { label: 'Certificates', href: '/learn/certificates', icon: Award },
-  { label: 'AI Tutor', href: '/learn/tutor', icon: Bot },
 ];
 
 export function StudentLayout() {

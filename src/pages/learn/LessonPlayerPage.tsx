@@ -140,13 +140,30 @@ export function LessonPlayerPage() {
 
       if (error) throw error;
 
-      setCompletedLessonIds(prev => new Set(prev).add(currentLesson.id));
+      const newCompleted = new Set(completedLessonIds).add(currentLesson.id);
+      setCompletedLessonIds(newCompleted);
       
+      const totalLessons = curriculum.reduce((acc, curr) => acc + curr.lessons.length, 0);
+      const isCourseNowComplete = newCompleted.size === totalLessons;
+
+      if (isCourseNowComplete) {
+        // Trigger certificate generation
+        try {
+          await supabase.functions.invoke('generate-certificate', {
+            body: { course_id: course.id, user_id: user.id }
+          });
+        } catch (certErr) {
+          console.error('Failed to generate certificate:', certErr);
+        }
+      }
+
       // Navigate to next lesson logic
       const flatLessons = curriculum.flatMap(m => m.lessons);
       const currentIndex = flatLessons.findIndex(l => l.id === currentLesson.id);
       if (currentIndex !== -1 && currentIndex < flatLessons.length - 1) {
         navigate(`/learn/courses/${slug}/lessons/${flatLessons[currentIndex + 1].id}`);
+      } else if (isCourseNowComplete) {
+        navigate(`/learn/certificates`); // Navigate to certificates page
       }
 
     } catch (err) {

@@ -29,6 +29,9 @@ import { StudentDashboardPage } from '@/pages/learn/DashboardPage';
 import { CourseCatalogPage } from '@/pages/learn/CourseCatalogPage';
 import { CourseDetailPage } from '@/pages/learn/CourseDetailPage';
 import { LessonPlayerPage } from '@/pages/learn/LessonPlayerPage';
+import { CertificatesPage } from '@/pages/learn/CertificatesPage';
+import { VerifyCertificatePage } from '@/pages/learn/VerifyCertificatePage';
+import { PaymentPage } from '@/pages/learn/PaymentPage';
 
 export const router = createBrowserRouter([
   // ----- Public routes -----
@@ -52,6 +55,10 @@ export const router = createBrowserRouter([
       { index: true, element: <CourseCatalogPage /> },
       { path: ':slug', element: <CourseDetailPage /> },
     ],
+  },
+  {
+    path: '/verify/:code?',
+    element: <VerifyCertificatePage />,
   },
 
   // ----- Admin portal -----
@@ -99,12 +106,10 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <StudentDashboardPage /> },
       { path: 'courses/:slug/lessons/:lesson_id', element: <LessonPlayerPage /> },
-      // Phase 3: My Courses, Certificates, AI Tutor
+      { path: 'certificates', element: <CertificatesPage /> },
+      { path: 'payment', element: <PaymentPage /> },
     ],
   },
-
-  // ----- Certificate verification (Phase 6) -----
-  // { path: '/verify/:code', ... }
 
   // ----- Catch-all: redirect to learn portal -----
   {

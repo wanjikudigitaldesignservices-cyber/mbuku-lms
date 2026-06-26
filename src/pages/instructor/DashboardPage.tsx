@@ -85,17 +85,6 @@ export function InstructorDashboardPage() {
         ))}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="mt-8 rounded-2xl border border-dashed border-white/[0.1] p-12 text-center"
-      >
-        <Users className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
-        <p className="text-muted-foreground">
-          📚 Course management tools coming in <strong>Phase 2</strong>
-        </p>
-      </motion.div>
     </div>
   );
 }

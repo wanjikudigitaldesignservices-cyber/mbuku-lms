@@ -20,6 +20,9 @@ import { SignupPage } from '@/pages/auth/SignupPage';
 // Dashboard pages
 import { AdminDashboardPage } from '@/pages/admin/DashboardPage';
 import { InstructorDashboardPage } from '@/pages/instructor/DashboardPage';
+import { InstructorCourseListPage } from '@/pages/instructor/CourseListPage';
+import { InstructorCourseCreatePage } from '@/pages/instructor/CourseCreatePage';
+import { InstructorCourseEditPage } from '@/pages/instructor/CourseEditPage';
 import { StudentDashboardPage } from '@/pages/learn/DashboardPage';
 
 export const router = createBrowserRouter([
@@ -61,7 +64,9 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <InstructorDashboardPage /> },
-      // Phase 2: Courses CRUD, Create Course
+      { path: 'courses', element: <InstructorCourseListPage /> },
+      { path: 'courses/new', element: <InstructorCourseCreatePage /> },
+      { path: 'courses/:id', element: <InstructorCourseEditPage /> },
     ],
   },
 
